@@ -110,3 +110,12 @@ to read document whose product_name is TV==>
 db.prices.find({"product_name":"Radio"});
 to Read just price
 db.prices.find({"product_name":"Radio"},{"price": 1,"_id":0});
+{"price": 1,"_id":0}===> is called projection, exclusion. visible , invisible.
+
+to read price and tax of Laptops
+db.prices.find({"product_name": "Laptop"},{"price":1,"_id":0,"tax":1});
+
+sort prices in asceding order
+
+db.prices.find({"product_name" : "Laptop"}, {"price": 1, "_id": 0, "tax": 1}).sort({"price":1});
+db.prices.find({"product_name" : "Laptop"}, {"price": 1, "_id": 0, "tax": 1}).sort({"price":-1});
