@@ -1,0 +1,4 @@
+in Mongo Table is Called  Collection
+in Mongo there is not Records, it is called Document
+in MongoDB Primary Key is Called index, and it is unique. -id
+_ id== syntax for PM 
