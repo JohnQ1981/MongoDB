@@ -2,3 +2,5 @@ in Mongo Table is Called  Collection
 in Mongo there is not Records, it is called Document
 in MongoDB Primary Key is Called index, and it is unique. -id
 _ id== syntax for PM 
+we have learned Creating, Reading and Updating on MongoDB
+there are changes
