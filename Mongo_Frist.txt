@@ -84,5 +84,21 @@ Timestamp() is Data Type in mongo DB.
 in MongoDB we have Boolean but in SQL we do not have.
 in Mongo we have Object Data Type , in SQL it is BLOB==>Binary Large Object
 
-How  to insert Pas Date by Using ISODate();
+16)How  to insert Pas Date by Using ISODate();
 db.prices.insert({"price": 555,"past_date": ISODate("2020-11-23")});
+
+
+17) HOW TO READ DOCUMENTS IN MONGO DB:
+db.prices.find().pretty();  fetches all in redable view
+how to read first 2
+db.prices.find().pretty().limit(2);
+
+how to read 2. and 3rd==> db.prices.find().pretty().skip(1).limit(3);
+
+how to read first record==>db.prices.find().pretty().limit(1);
+
+db.prices.findOne();
+
+to read document whose product name is Laptop and pruce is 800
+
+db.prices.find({$and :[{"product_name":"Laptop"},{"price": 800}]});
