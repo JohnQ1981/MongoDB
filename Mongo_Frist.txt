@@ -119,3 +119,31 @@ sort prices in asceding order
 
 db.prices.find({"product_name" : "Laptop"}, {"price": 1, "_id": 0, "tax": 1}).sort({"price":1});
 db.prices.find({"product_name" : "Laptop"}, {"price": 1, "_id": 0, "tax": 1}).sort({"price":-1});
+
+Comparison Operators:
+in mongo we have equality Comparison it is ==> $eq
+---less than==> $lt    
+--- greater than ==> $gt  
+--- less than or equal to ==> $lte   
+---greater than or equal to ==> $gte   
+--- not equals ===> $ne   
+----in an Array ==> $in 
+--- not in an Array ==> $nin 
+
+///fetch the documents whose prices are equal to 700
+db.prices.find({"price":$eq=750}); 
+db.prices.find({"price":{$eq:750}}); 
+db.prices.find({"price":750}); 
+//fetch document whsoe price is lass then or equal 750
+db.prices.find({"price":{$lte:750}}); 
+//
+//fetch documentswhose prices greater or equal to 750
+db.prices.find({"price":{$gte:750}}); 
+db.prices.find({price:{$gte:750}}); 
+
+// fetch  documents whose prices are one of the 555, 123, 750
+db.prices.find({price:{$in:[555,123,750]}}); 
+
+// fetch  documents whose prices are not one of the 555, 123, 750
+db.prices.find({price:{$nin:[555,123,750]}}); 
+
