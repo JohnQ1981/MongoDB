@@ -105,3 +105,8 @@ db.prices.find({$and :[{"product_name":"Laptop"},{"price": 800}]});
 
 ro read  document whose product name is Laptop or price is 900
 db.prices.find({$or :[{"product_name":"Laptop"},{"price":900}]});
+
+to read document whose product_name is TV==>
+db.prices.find({"product_name":"Radio"});
+to Read just price
+db.prices.find({"product_name":"Radio"},{"price": 1,"_id":0});
