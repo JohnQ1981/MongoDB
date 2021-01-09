@@ -83,3 +83,6 @@ db.prices.insert({"month" : ("0" + (new Date().getMonth() + 1)).slice(-2)});
 Timestamp() is Data Type in mongo DB. 
 in MongoDB we have Boolean but in SQL we do not have.
 in Mongo we have Object Data Type , in SQL it is BLOB==>Binary Large Object
+
+How  to insert Pas Date by Using ISODate();
+db.prices.insert({"price": 555,"past_date": ISODate("2020-11-23")});
