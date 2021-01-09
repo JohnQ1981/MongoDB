@@ -1,0 +1,63 @@
+1) How to create DB by using terminal 
+   
+    use inventory
+    switched to db inventory
+
+2) How to see which DB are you in?
+    db ==> inventory
+
+3) How to see all DB on terminal
+show dbs ===>MongoTest  0.000GB
+TechProEd  0.000GB
+admin      0.000GB
+config     0.000GB
+local      0.000GB
+
+4) How to Drop DB
+      db.dropDatabase();
+
+5) How to create Collection in Database
+    db.createCollection("products");  ==>{ "ok" : 1 }
+
+ 6) How to Drop a Collection
+    db.products.drop();  ==>true
+
+7) How to add data(insert Document) to a Collection
+
+        a) db.prices.insertOne({"_id: 1", "product_name":"MacBookPro","price": 1200, "tax":32});
+    db.prices.insertOne({ "product_name":"Laptop", "price" : 800, "tax": 32});
+8). How to insert Many
+db.prices.insertMany([{"product_name":"MacLaptop", "price" : 900, "tax": 42},{"product_name":"Macbook", "price" : 1200, "tax": 52}]);
+
+9)How to insert single or Multiple Docuements by using the same method
+    db.priceinsert();==> WriteResult({ "nInserted" : 1 })
+
+    db.prices.insert({"price":555},{"product_name":"Radio"});
+        db.prices.insert([{"price":555},{"product_name":"Radio"}]);
+
+10)in Mongo DB we can create many indexes (PK), 
+in SQL one PK but on MONGO we have many indexes (PK)
+> db.prices.ensureIndex({"product_name":1});==>{
+        "numIndexesBefore" : 2,
+        "numIndexesAfter" : 2,
+        "note" : "all indexes already exist",
+        "ok" : 1
+}
+
+> db.products.ensureIndex({"product_name":1});
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+
+
+
+11)How to fetch Docuements from a Collection
+db.prices.find(); ===> fetches all documents
+
+db.prices.find().pretty(); ==> fetches all documentsin JSON pretty format
+
+12) Object Data Type:
+db.prices.insert({"Name": "Ali Can", "Marks" : { "English" : 94, "Computer" : 96, "Maths" : 80, "Science" : 85 } });
