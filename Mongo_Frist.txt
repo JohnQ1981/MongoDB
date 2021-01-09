@@ -61,3 +61,25 @@ db.prices.find().pretty(); ==> fetches all documentsin JSON pretty format
 
 12) Object Data Type:
 db.prices.insert({"Name": "Ali Can", "Marks" : { "English" : 94, "Computer" : 96, "Maths" : 80, "Science" : 85 } });
+
+13) var date1= new Date();
+var date 2 = ISODate();
+var month = date2.getMonth();
+db.prices.insert({"Date":date1,"Date2":date2,"Month":month});
+
+14) var now = new Date();//GMT Time
+db.prices.insert({"Current_date": now});
+
+var now1 = ISODate();
+db.prices.insert({"current_date": now1});
+
+var now2 = ISODate();
+var month2= now2.getMonth();
+db.prices.insert({"month":now2.getMonth()});
+db.prices.insert({"month" : ("0" + (new Date().getMonth() + 1)).slice(-2)});
+
+15) timestamp
+> db.prices.insert({"tiime_stamp":new Timestamp(),"price":123});===>"time_stamp" : Timestamp(1610223463, 1),==>64bits
+Timestamp() is Data Type in mongo DB. 
+in MongoDB we have Boolean but in SQL we do not have.
+in Mongo we have Object Data Type , in SQL it is BLOB==>Binary Large Object
