@@ -1,0 +1,32 @@
+1) find and replace  ==> findOneAndReplace()
+find the document whose quantities are less than 
+20 then replace Ali van for Member 
+and 80 quantity 80;
+db.members.findOneAndReplace({"qty":{$lt:20}}, {"member":"Ali Can", "qty":80});==> it returns 
+===>the previous document, original document, and 
+===>it removes all other keys if you do not assign to those keys
+===> findOneAndReplace()===> this method replcaes the first record that meets the criteria.
+
+{
+        "_id" : 2,
+        "member" : "xyz123",
+        "status" : "A",
+        "qty" : 19,
+        "misc1" : "reminder: ping me at 100pts",
+        "misc2" : "Some random comment"
+}
+
+
+Ex2://Find the document whose quantities are greatr than 20 and less
+and change the member of those document whose quantity is the lowest to "Winner"
+db.members.findOneAndReplace({"qty":{$gt:20}},{"member":"Winner"},{sort:{"qty":1}});
+
+
+ex:3 //Find the document whose quantities are greatr than 20 and less
+and change the member of those document whose quantity is the highest to "super"
+db.members.findOneAndReplace({"qty":{$gt:20}},{"member":"Super"},{sort:{"qty":-1}});
+
+
+
+
+2)
