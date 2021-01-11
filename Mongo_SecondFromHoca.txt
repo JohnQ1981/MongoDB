@@ -1,0 +1,81 @@
+1)findOneAndReplace() ==> It returns the original document 
+                      ==> If you do not assign values to some keys they will be removed from the document
+                      ==> THe method nam eis "findOneAndReplace()", because of that it replaces just for the first one
+Ex:Find the documents whose qty's are less than 20 then replace Ali Can for member and 80 for qty.
+   db.members.findOneAndReplace({"qty":{$lt:20}}, {"member":"Ali Can", "qty":80});
+
+Ex:Find the documents whose qty's are greater than 20 and change the member of document whose qty is the lowest to "Winner"  
+   db.members.findOneAndReplace({"qty":{$gt:20}},{"member":"Winner"},{sort:{"qty":1}}); 
+
+Ex:Find the documents whose qty's are greater than 20 and change the member of document whose qty is the highest to "Super"
+   db.members.findOneAndReplace({"qty":{$gt:20}}, {"member":"super"}, {sort:{"qty":-1}});
+
+2)findOneAndUpdate() 
+Ex:Find the document whose assignment is 5 then update the points to 99
+    db.grades.findOneAndUpdate({"assignment":{$eq:5}}, {$inc:{"points":75}}, {returnNewDocument:true});
+
+Ex:Find the document whose assignment is 3 then update the name to "Lazy boy"
+    db.grades.findOneAndUpdate({"assignment":{$eq:3}}, {$set:{"name":"Lazy boy"}}, {returnNewDocument:true});
+
+Note: The difference between findOneAndReplace() and  findOneAndUpdate();
+      findOneAndReplace() removes key-value pairs if you do not assign any value for the key.  
+      findOneAndUpdate() does not remove any key-value pairs.If you make assignment it updates the value
+      otherwise it keps the old values.
+
+Ex: Update the points of a document whose assignment is 7 to 33 and update the name to "Veli Han"
+    db.grades.findOneAndUpdate({"assignment":7},{$set:{"points":33, "name":"Veli Han"}},{upsert:true, returnNewDocument:true}); 
+
+    db.grades.findOneAndReplace({"assignment":8},{"points":33, "name":"Veli Han"},{upsert:true, returnNewDocument:true}); 
+
+    Note: "upsert:true" creates the document if it does not exist when you use findOneAndUpdate() or findOneAndReplace() 
+    Note: findOneAndUpdate() and findOneAndReplace() methods return the old document. If you want to see new document
+          you should type "returnNewDocument:true".
+
+3) How to delete a document ==> deleteOne(), deleteMany(), remove() 
+   a) db.grades.deleteOne({"name":"Lazy boy"}); 
+   b) db.grades.deleteMany({"assignment":2}); 
+   c) db.grades.deleteOne({"assignment":5});
+   d) db.grades.deleteMany({});
+   e) db.grades.remove({"assignment":5});
+Note: deleteMany() and remove() have same functionality
+
+4)How to update multiple documents 
+    ==> update() --> If you do not use {multi:true} it will update just the first document
+                     If you use {multi:true} it will update all matched documents
+    Ex: Update assignment to 10 if the points are greater than or equal to 20
+    db.grades.update({"points":{$gte:20}}, {$set:{"assignment":10}}, {multi:true});
+
+    ==> updateOne() --> It will update just the first document 
+    Ex: Update points of the first document to 23 if the assignment is 2                
+    db.grades.updateOne({"assignment":2}, {$set:{"points":23}});
+
+    ==> updateMany() --> It will update all matched documents
+    Ex: Update all points to 55 if the assignment is 10
+    db.grades.updateMany({"assignment":10}, {$set:{"points":55}});
+
+    Ex: Update points to 77 if the assignment is 21
+    db.grades.update({"assignment":21},{$set:{"points":77}}, {upsert:true});
+
+5) Aggregation in MongoDB
+   Ex: Find the total points for every assignment
+   var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", total:{$sum:"$points"}}}]; 
+   db.grades.aggregate(pipeline);
+
+   Ex: Find the average points for every assignment
+   var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", average:{$avg:"$points"}}}]; 
+   db.grades.aggregate(pipeline);
+
+   Ex: Find the minimum point for every assignment
+   var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", minimum:{$min:"$points"}}}]
+   db.grades.aggregate(pipeline);
+
+   Ex: Find the average points of the records if the assignment is less than 20
+   var pipeline = [{$match:{assignment:{$lt:20}}}, {$group:{"_id":"$assignment", average:{$avg:"$points"}}}]
+   db.grades.aggregate(pipeline);
+
+   Ex:Find the sum of points of the documents whose names are starting with "A"
+   var pipeline = [{$match:{name:{$regex:/^A/}}}, {$group:{"_id":"$name", total:{$sum:"$points"}}}]
+   db.grades.aggregate(pipeline);
+
+   Ex: Find the documents which contains "Stiles" in names value
+   db.grades.find({"name":{$regex:"Stiles"}});

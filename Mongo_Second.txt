@@ -26,7 +26,123 @@ ex:3 //Find the document whose quantities are greatr than 20 and less
 and change the member of those document whose quantity is the highest to "super"
 db.members.findOneAndReplace({"qty":{$gt:20}},{"member":"Super"},{sort:{"qty":-1}});
 
+db.grades.insertMany([
+{ _id: 6305, name : "A. MacDyver", "assignment" : 5, "points" : 24 },
+{ _id: 6308, name : "B. Batlock", "assignment" : 3, "points" : 22 },
+{ _id: 6312, name : "M. Tagnum", "assignment" : 5, "points" : 30 },
+{ _id: 6319, name : "R. Stiles", "assignment" : 2, "points" : 12 },
+{ _id: 6322, name : "A. MacDyver", "assignment" : 2, "points" : 14 },
+{ _id: 6234, name : "R. Stiles", "assignment" : 1, "points" : 10 }
+]);
 
 
 
-2)
+
+
+2)findOneAndUpdate();====>
+Ex: find document whose assignment is 5 then update the points to 99
+db.grades.findOneAndUpdate({"assignment":5},{$inc:{"points": 99}},{returnNewDocument:true});
+db.grades.findOneAndUpdate({"assignment":5},{$inc:{"points": -221}},{returnNewDocument:true});
+db.grades.findOneAndUpdate({"assignment":{$eq:5}},{"points":99});
+
+ex4: x: find document whose assignment is 3 then update the name to Lazy boy
+db.grades.findOneAndUpdate({"assignment":3},{$set:{"name":"Lazy boy"}},{returnNewDocument:true});
+NOTE: difference between findOneAndReplace() and findOneAndUpdate:
+
+findOneAndUpdate===> does not remove any key-value pairs,keeps other  keys-value  in the document
+findOneAndReplace===> removes key-value pairs if you do not assign any value for the key
+
+
+ex.: update the docuemnt whose assigment is 7 and update the points to 33 and update the name to Veli Han
+db.grades.findOneAndReplace({"assignment":7},{"points":33,"name":"Veli Han"},{returnNewDocument:true});
+db.grades.findOneAndReplace({"assignment":7},{"points":33,"name":"Veli Han"},{upsert:true,returnNewDocument:true});
+
+db.grades.findOneAndUpdate({"assignment":7},{"points":33,"name":"Veli Han"},{upsert:true,returnNewDocument:true});
+
+Ex: Update the points of a document whose assignment is 7 to 33 and update the name to "Veli Han"
+    db.grades.findOneAndUpdate({"assignment":7},{$set:{"points":33, "name":"Veli Han"}},{upsert:true, returnNewDocument:true}); 
+
+    db.grades.findOneAndReplace({"assignment":77},{"points":33, "name":"Veli Han"},{upsert:true, returnNewDocument:true});
+
+
+NOTE: upsert:true  ===> creates a document if it does not exist, when you use
+findOneAndReplace()  and findOneAndUpdate();
+findOneAndUpdate()==>
+findOneAndReplace===>  return the old docement, if you want to seethe new documentyou need to use
+returnNewDocument:true
+
+
+3) how to delete a document ===> deleteOne(), deleteMany();
+
+db.grades.deleteOne({"name":"Lazy boy"});
+
+how to to delete many==> db.grades.deleteMany({"assignment":2});
+
+db.grades.deleteOne({"assignment":5});
+
+db.grades.deleteMany({});  /// deletes everything from the collecttion
+
+
+db.grades.delete();   not a function.
+
+remove()===> db.grades.remove({"assignment": 5});
+db.grades.remove({});  ==> deletes all
+
+
+// how to update multiple documents==>
+ex: find and update the assigment to 10 if points is greater than or equal to 20
+
+db.grades.update({"points":{$gte:20}},{$set:{"assignment":10}},{multi:true});
+
+we need to insert  {multi:true} to update multiple documents, otherwise it will update the first document
+
+update only one
+db.grades.updateOne({"assignment":{$eq:2}},{$set:{"points":500}});
+db.grades.updateOne({"assignment":2}, {$set:{"points":23}});
+
+
+
+updateMany()===> it will update all that match the criteria
+
+update all points to 55 if assignemnt is 10
+db.grades.updateMany({"assignment":10},{$set:{"points":55,"name":"TEST"}});
+
+update points to 77 if assigment is 21
+
+db.grades.updateMany({"assignment":21},{$set:{"points":77}},{upsert:true});
+db.grades.update({"assignment":21},{$set:{"points":77,"name":"John Q"}},{upsert:true});
+db.grades.updateMany({"assignment":21},{$set:{"points":77,"name":"John Q","Role":"Manager"}},{upsert:true});
+
+5) Aggregation in MongoDB : 
+find the total points for every assignment
+
+var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", total:{$sum:"$points"}}}];
+   db.grades.aggregate(pipeline);
+   var pipeline = [ {$match:{"name"}}, {$group:{"_id":"$assignment", total:{$sum:"$points"}}}];
+   db.grades.aggregate(pipeline);
+
+
+
+
+var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", average:{$avg:"$points"}}}];
+   db.grades.aggregate(pipeline);
+
+   //var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", average:{$avg:"$points"}}}];
+   db.grades.aggregate(pipeline);
+
+   //Ex: Find the minimum point for every assignment
+   var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", minimum:{$min:"$points"}}}];
+   db.grades.aggregate(pipeline);
+
+   var pipeline = [ {$match:{}}, {$group:{"_id":"$assignment", minimum:{$min:"$points"}}}];
+   db.grades.aggregate(pipeline);
+
+  var pipeline = [ {$match:{"name":"TEST"}}, {$group:{"_id":"$assignment", minimum:{$min:"$points"}}}];
+   db.grades.aggregate(pipeline);
+    
+    
+    var pipeline = [ {$match: {assignment:{$lt:20}}}, {$group:{"_id":"$assignment", average:{$avg:"$points"}}}];
+   db.grades.aggregate(pipeline);
+   
+
+
