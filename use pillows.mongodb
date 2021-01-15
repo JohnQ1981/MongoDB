@@ -1,0 +1,5 @@
+use pillows
+db.createCollection("pillows");
+db.pillows.insertOne({"color": "Red"});
+db.pillows.find();
+use inventory

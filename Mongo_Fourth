@@ -1,0 +1,233 @@
+EXAMPLE: Display common authors from both of the documents with total scores
+ and total views. (INNER JOIN)
+ // 
+ db.articles.aggregate([
+    {$lookup:{
+                from:"stories",
+                localField:"author",
+                foreignField:"author",
+                as:"commons"
+             }
+    },
+    {
+        $unwind: "$commons"
+    },
+    {$project:{
+                totalScore:{$add:["$score", "$commons.score"]},
+                totalViews:{$add:["$views", "$commons.views"]},
+                _id:0, author:1
+              }
+    }
+]);
+
+
+db.groceries .insertMany([
+{"id" : 1 , "item" : "cashew" , "qnt" : 6, "price" : 43},
+{"id" : 2 , "item" : "cookie" ,   "qnt" : 4, "price" : 54},
+{"id" : 3 , "item" : "vegetable" ,   "qnt" : 5, "price" : 24}
+]);
+
+db.stock .insertMany([
+{"id" : 1 , "item" : "cashew" , "description" : "salted cashews", "isle" : 43},
+{"id" : 2 , "item" : "cookie" ,   "description" : "oat and raisin cookies", "isle" : 54},
+{"id" : 3 , "item" : "fruit" ,   "description" : "contains vitamin C", "isle" : 34},
+{"id" : 4 , "item" : "meat" ,   "description" : "contains vitamin C\nof course vitamin D", "isle" : 34}
+]);
+
+EXAMPLE: Display all details of common items(INNER JOIN)
+
+db.groceries.aggregate([
+                    {$lookup:{
+                                from:"stock",
+                                localField:"item",
+                                foreignField:"item",
+                                as:"commons"
+                             }
+                    
+                    
+                    },
+                    {
+                        $unwind:"$commons"
+                    },
+                    {$project:{
+                                _id:0
+                              }
+
+                    }
+]).pretty();
+
+
+EXAMPLE: Display all details of the items in stock document(LEFT or RIGHT JOIN)
+
+db.stock.aggregate([
+    {$lookup:{
+                from:"groceries",
+                localField:"item",
+                foreignField:"item",
+                as:"doc"
+             }
+    },
+    {$unwind:{
+                path:"$doc", preserveNullAndEmptyArrays:true
+             }
+    }
+]).pretty();
+
+
+
+
+EXAMPLE: Display all documents from both of the collections, 
+sort the documents according to the item name (FULL JOIN)
+
+db.groceries.aggregate([
+                {$unionWith:{coll:"stock"}},
+                {$project:{_id:0,id:0}},
+                {$sort:{item:1}}
+]);
+NOTe:
+1) for full join use aggregate+unionWith(); by using unionWith() atomic function i can fetch data from two different table
+
+2)For Left /Right Joins==> use  ==> aggregate + $lookup  OR aggregate + $lookup+ $unwind + path:"$doc", preserveNullAndEmptyArrays:true
+
+3) For INNER JOIN ==> aggregate+ $lookup+ $unwind
+
+=========REGULAR EXPRESSION====================
+EXAMPLE: Find the documents whose description value containing 
+"cO" or "Co" or "CO" or "co" from "stock" collection
+
+db.stock.find({description:{$regex:"Co",$options:'i'}}).pretty().count();
+db.stock.find({description:{$regex:"Co",$options:'i'}}).pretty();
+
+EXAMPLE: Find the documents whose description value starting 
+with "s" or "S" from "stock" collection
+
+db.stock.find({description:{$regex:/^S/, $options:'i'}});
+
+EXAMPLE: Find the documents whose description value 
+ending with "s" or "S" from "stock" collection
+
+db.stock.find({description:{$regex:/S$/, $options:'i'}}).pretty();
+
+EXAMPLE: Find the documents whose description value 
+does not contain "co" from "stock" collection (ignore cases)
+
+db.stock.find({description:{$regex:'^((?!Co).)*$',$options:'i'}});
+
+EXAMPLE: Find the documents whose description value starting with 
+"o" and ending with "s" from "stock" collection (ignore cases)
+
+db.stock.find({description:{$regex:/^O.*s$/,$options:'i'}});
+
+EXAMPLE: Find the documents whose description 
+value ending with "kies" from "stock" collection
+
+db.stock.find({description:{$regex:/kies$/}}).pretty();
+EXAMPLE: Find the documents whose description value 
+starting with "sal" from "stock" collection (ignore case)
+
+db.stock.find({description:{$regex:/^sal/}}).pretty();
+
+db.stock.find({description:{$regex:/^sal.*hews$/,$options:'i'}}).pretty();
+
+EXAMPLE: Find the documents whose description value containing 
+lines starting with "o" from "stock" collection
+db.stock.find({description:{$regex:/^o/}}).pretty();
+
+db.stock.find({description:{$regex:/^o/,$options:'mi'}}).pretty();
+Note 1: In MongoDB, to check multiple lines you need to use $options:'m'
+Note 2: As you see in the following example "m" and "i" can be used together
+Note3: in monto DB to ignore case  we need to use $options:'i'
+
+================TEXT INDEXES=========================
+We can create indexes on MongoDB, that is unique for MongoDB, create index and fetch data
+Example: Create TEXT index for "name and description"  fields
+
+HOW TO CREATE TEXT INDEXES
+db.stores.createIndex({name:"text", description:"text"});
+
+EXAMPLE: Find all stores containing any terms from the list “coffee”, “shop”, and “java”
+db.stores.find({$text:{$search:"coffee shop java"}});
+
+EXAMPLE: Find all documents containing exact phrase “coffee shop”
+
+db.stores.find({$text:{$search:"\"coffee shop\""}});
+
+EXAMPLE: Find all stores containing “java” or “shop” but not “coffee”
+
+db.stores.find({$text:{$search:"java shop-coffee"}});
+
+EXAMPLE: Score for each document that specifies how well a document matches the query.
+         The query is “coffee”, “shop”, and “java”
+
+db.stores.find({$text:{$search:"java shop coffee"}},
+{score:{$meta:"textScore"}},
+{$sort:{"score":1}}
+);
+
+EXAMPLE: Sort the results in order of relevance score for each document that specifies how well a document matches the query
+db.stores.find({$text:{$search:"java shop coffee"}},
+{score:{$meta:"textScore"}}
+).sort({score:{$meta:"textScore"}});  ===> this is th eonly sorting that will work.
+
+db.stores.find({$text:{$search:"java shop coffee"}},
+{score:{$meta:"textScore"}},
+{$sort:{score:1}}
+);
+
+db.stores.find(     {$text:{$search:"java shop coffee"}},     {score: {$meta:"textScore"}} ).sort({score:1});
+
+==========RELATIONSHIPS ON MONGODB======
+1) One To One RELATIONSHIP
+db.relationships.find({name:"Ali Can"})
+{
+"Name" : "Ali Can”, 
+"Age" : 25,
+"Address" : {
+            "City" : "Pune",
+            "State" : "MA"
+            }
+}
+
+
+2) One To Many RELATIONSHIP
+{
+"Name" : ["Ali Can”, "Veli Han"] 
+"Age" : 25,
+"Address : [   {
+                "City" : "Miami",
+                "State" : "FL"
+                },
+                {
+                "City" : “Long Island",
+                "State" : “NY"
+                }
+            ]
+}
+
+3) REFERENCED RELATIONSHIP===> creating different collection for child JSON data
+a) create relationship database
+b) db.students.insertOne({"Name":"Ali Can","Age":25,"Address_id":["6001018916956e0dfbf6b767","6001018916956e0dfbf6b768"]}); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
