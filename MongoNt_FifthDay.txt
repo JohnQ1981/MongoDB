@@ -1,0 +1,92 @@
+EXAMPLE: Find all address ids of Ali Can
+
+db.users.find({name:"Ali Can"}).pretty();
+
+db.users.find({name:"Ali Can"},
+{_id:0,age:0,phone:0}
+
+).pretty();
+
+
+EXAMPLE: Find the address details of Ali Can
+
+db.addresses.find({_id:{$in:[ObjectId("6001018916956e0dfbf6b767"),ObjectId("6001018916956e0dfbf6b768")]}}).pretty();
+
+
+4)=======MANY TO MANY RELATIONSHIP IN MONGO DB======
+db.persons.insertMany([
+    {
+        "_id": "Prsn101",
+        "firstName": "Joe",
+        "lastName": "Mongo",
+        "groups": [
+            "Grp11",
+            "Grp12"
+        ]
+    },
+    {
+        "_id": "Prsn102",
+        "firstName": "Sally",
+        "lastName": "Mongo",
+        "groups": [
+            "Grp11"
+        ]
+    }
+]);
+
+db.groups.insertMany([
+    {
+        "_id": "Grp11",
+        "groupName": "mongoDB User",
+        "persons": [
+            "Prsn101",
+            "Prsn102"
+        ]
+    },
+    {
+        "_id": "Grp12",
+        "groupName": "mongoDB Administrator",
+        "persons": [
+            "Prsn101"
+        ]
+    }
+]);
+4)=======MANY TO MANY RELATIONSHIP IN MONGO DB======
+
+EXAMPLE: Get all persons in the "mongoDB User" group
+
+db.persons.find({groups:"Grp11"}).pretty();
+
+db.persons.find({groups:"Grp11"},
+{groups:0, _id:0}
+
+).pretty();
+
+EXAMPLE: Get all persons in the "mongoDB Administrator" group
+db.persons.find({groups:"Grp12"},
+{groups:0, _id:0}
+).pretty();
+
+EXAMPLE: Get all groups for "Joe Mongo"
+
+db.groups.find({persons:"Prsn101"}).pretty();
+db.groups.find({persons:"Prsn101"},
+{_id:0,persons:0}
+).pretty();
+EXAMPLE: Get all groups for "Sally Mongo"
+
+db.groups.find({persons:"Prsn102"},
+{_id:0,persons:0}
+).pretty();
+
+=====REPLICATION=======> having copies in different places
+synced all the time right away.
+
+================GridFS===============> Grid File System
+each document has max of 16MB of data in a document in mongoDB
+db.fs.files.find().pretty();
+===============================================
+=================SHARDING==============
+
+
+
